@@ -19,7 +19,7 @@ class RefreshToken {
 		return '';
 	}
 
-	public static perform (req, res): any {
+	static async perform (req, res): any {
 		const _token = RefreshToken.getToken(req);
 		if (_token === '') {
 			return res.json({
@@ -33,53 +33,54 @@ class RefreshToken {
 			{ expiresIn: res.locals.app.jwtExpiresIn }
 		);
 
-		User.findOne({email: decode.email}, (err, user) => {
+		let user;
+		try {
+			user = await User.findOne({ email: decode.email });
+		} catch (err) {
+			return res.json({
+				error: err
+			});
+		}
+
+		if (! user) {
+			return res.json({
+				error: ['User not found!']
+			});
+		}
+
+		if (! user.password) {
+			return res.json({
+				error: ['Please login using your social creds']
+			});
+		}
+
+		user.comparePassword(decode.password, (err, isMatch) => {
 			if (err) {
 				return res.json({
 					error: err
 				});
 			}
 
-			if (! user) {
+			if (! isMatch) {
 				return res.json({
-					error: ['User not found!']
+					error: ['Password does not match!']
 				});
 			}
 
-			if (! user.password) {
-				return res.json({
-					error: ['Please login using your social creds']
-				});
-			}
+			const token = jwt.sign(
+				{ email: decode.email, password: decode.password },
+				res.locals.app.appSecret,
+				{ expiresIn: res.locals.app.jwtExpiresIn * 60 }
+			);
 
-			user.comparePassword(decode.password, (err, isMatch) => {
-				if (err) {
-					return res.json({
-						error: err
-					});
-				}
+			// Hide protected columns
+			user.tokens = undefined;
+			user.password = undefined;
 
-				if (! isMatch) {
-					return res.json({
-						error: ['Password does not match!']
-					});
-				}
-
-				const token = jwt.sign(
-					{ email: decode.email, password: decode.password },
-					res.locals.app.appSecret,
-					{ expiresIn: res.locals.app.jwtExpiresIn * 60 }
-				);
-
-				// Hide protected columns
-				user.tokens = undefined;
-				user.password = undefined;
-
-				return res.json({
-					user,
-					token,
-					token_expires_in: res.locals.app.jwtExpiresIn * 60
-				});
+			return res.json({
+				user,
+				token,
+				token_expires_in: res.locals.app.jwtExpiresIn * 60
 			});
 		});
 	}

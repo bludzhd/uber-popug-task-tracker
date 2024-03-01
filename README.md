@@ -95,9 +95,7 @@ A boilerplate for [Node.js](https://nodejs.org/en) App.
 │   │   └── Web.ts
 │   ├── services
 │   │   └── strategies
-│   │        ├── Google.ts
-│   │        ├── Local.ts
-│   │        └── Twitter.ts
+│   │        └── Local.ts
 │   └── index.ts
 ├── views
 │   ├── includes
@@ -176,10 +174,6 @@ docker-compose up -d
   POST   | /login
   GET    | /logout
   GET    | /account
-  GET    | /auth/google
-  GET    | /auth/google/callback
-  GET    | /auth/twitter
-  GET    | /auth/twitter/callback
   GET    | /status-monitor
 +--------+-------------------------+
 

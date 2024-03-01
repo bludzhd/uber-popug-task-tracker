@@ -8,7 +8,7 @@ import * as cors from 'cors';
 import { Application } from 'express';
 import * as flash from 'express-flash';
 import * as compress from 'compression';
-import * as connect from 'connect-mongo';
+import * as MongoStore from 'connect-mongo';
 import * as bodyParser from 'body-parser';
 import * as session from 'express-session';
 import * as expressValidator from 'express-validator';
@@ -16,8 +16,6 @@ import * as expressValidator from 'express-validator';
 import Log from './Log';
 import Locals from '../providers/Locals';
 import Passport from '../providers/Passport';
-
-const MongoStore = connect(session);
 
 class Http {
 	public static mount(_express: Application): Application {
@@ -56,9 +54,9 @@ class Http {
 			cookie: {
 				maxAge: 1209600000 // two weeks (in ms)
 			},
-			store: new MongoStore({
-				url: process.env.MONGOOSE_URL,
-				autoReconnect: true
+			store: MongoStore.create({
+				mongoUrl: process.env.MONGOOSE_URL,
+				// autoReconnect: true
 			})
 		};
 

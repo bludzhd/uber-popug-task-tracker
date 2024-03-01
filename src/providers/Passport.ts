@@ -8,8 +8,6 @@ import { Application } from 'express';
 import * as passport from 'passport';
 
 import LocalStrategy from '../services/strategies/Local';
-import GoogleStrategy from '../services/strategies/Google';
-import TwitterStrategy from '../services/strategies/Twitter';
 
 import User from '../models/User';
 import Log from '../middlewares/Log';
@@ -23,10 +21,14 @@ class Passport {
 			done(null, user.id);
 		});
 
-		passport.deserializeUser<any, any>((id, done) => {
-			User.findById(id, (err, user) => {
-				done(err, user);
-			});
+		passport.deserializeUser<any, any>(async (id, done) => {
+			let user;
+			try {
+				user = await User.findById(id);
+			} catch (err) {
+				done(err, null);
+			}
+			done(null, user);
 		});
 
 		this.mountLocalStrategies();
@@ -37,8 +39,6 @@ class Passport {
 	public mountLocalStrategies(): void {
 		try {
 			LocalStrategy.init(passport);
-			GoogleStrategy.init(passport);
-			TwitterStrategy.init(passport);
 		} catch (_err) {
 			Log.error(_err.stack);
 		}

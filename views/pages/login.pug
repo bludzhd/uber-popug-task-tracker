@@ -7,7 +7,7 @@ block content
 			h2.text-center.text-uppercase.text-secondary.mb-0 Login
 			hr.star-dark.mb-5
 			.row
-				.col-lg-6.mx-auto
+				.col-lg-12.mx-auto
 					include ../partials/flash
 					form#loginForm(name='loginform', novalidate='novalidate', action='/login', method='POST')
 						input(type='hidden', name='_csrf', value=_csrf)
@@ -25,5 +25,3 @@ block content
 						#success
 						.form-group
 							button#loginButton.btn.btn-primary.btn-xl(type='submit') Login
-				.col-lg-6.mx-auto
-					include ../partials/socials

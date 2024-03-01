@@ -14,7 +14,7 @@ class Register {
 		});
 	}
 
-	public static perform (req: IRequest, res: IResponse, next: INext): any {
+	static async perform (req: IRequest, res: IResponse, next: INext): any {
 		req.assert('email', 'E-mail cannot be blank').notEmpty();
 		req.assert('email', 'E-mail is not valid').isEmail();
 		req.assert('password', 'Password cannot be blank').notEmpty();
@@ -34,28 +34,31 @@ class Register {
 			password: req.body.password
 		});
 
-		User.findOne({ email: req.body.email }, (err, existingUser) => {
+		let existingUser;
+
+		try {
+			existingUser = await User.findOne({ email: req.body.email });
+		} catch (err) {
+			return next(err);
+		}
+
+		if (existingUser) {
+			req.flash('errors', { msg: 'Account with the e-mail address already exists.' });
+			return res.redirect('/signup');
+		}
+
+		try {
+			await user.save();
+		} catch (error) {
+			return next(error);
+		}
+
+		req.logIn(user, (err) => {
 			if (err) {
 				return next(err);
 			}
-
-			if (existingUser) {
-				req.flash('errors', { msg: 'Account with the e-mail address already exists.' });
-				return res.redirect('/signup');
-			}
-
-			user.save()
-				.then(() => {
-					req.logIn(user, (err) => {
-						if (err) {
-							return next(err);
-						}
-						req.flash('success', { msg: 'You are successfully logged in now!' });
-						res.redirect('/signup');
-					});
-			}).catch((error) => {
-				return next(error);
-			});
+			req.flash('success', { msg: 'You are successfully logged in now!' });
+			res.redirect('/signup');
 		});
 	}
 }

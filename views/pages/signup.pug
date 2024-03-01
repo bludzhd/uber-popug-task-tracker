@@ -7,7 +7,7 @@ block content
 			h2.text-center.text-uppercase.text-secondary.mb-0 SignUp
 			hr.star-dark.mb-5
 			.row
-				.col-lg-6.mx-auto
+				.col-lg-12.mx-auto
 					//- Flash Messages
 					include ../partials/flash
 					form#singupForm(name='signupform', novalidate='novalidate', action='/signup', method='POST')
@@ -31,5 +31,3 @@ block content
 						#success
 						.form-group
 							button#registerButton.btn.btn-primary.btn-xl(type='submit') Register
-				.col-lg-6.mx-auto
-					include ../partials/socials

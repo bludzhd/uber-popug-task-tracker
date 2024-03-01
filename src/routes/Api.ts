@@ -18,6 +18,7 @@ const router = Router();
 
 router.get('/', HomeController.index);
 
+// SSO LOGIN
 router.post('/auth/login', LoginController.perform);
 router.post('/auth/register', RegisterController.perform);
 router.post('/auth/refresh-token', expressJwt({ secret: Locals.config().appSecret }), RefreshTokenController.perform);

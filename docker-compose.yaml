@@ -11,11 +11,7 @@ services:
         environment:
             - REDIS_QUEUE_HOST=redis
             - MONGOOSE_URL=mongodb://mongo:27017/typescript_mongoose
-            - GOOGLE_ID=
-            - GOOGLE_SECRET=
-            - TWITTER_KEY=
-            - TWITTER_SECRET=
-        command: sh -c "npm install && npm run dev"
+        command: sh -c "npm i && npm run dev"
         ports:
             - 4040:4040
             - 5550:5550

@@ -18,7 +18,7 @@ class Login {
 		});
 	}
 
-	public static perform (req: IRequest, res: IResponse, next: INext): any {
+	static async perform (req: IRequest, res: IResponse, next: INext): any {
 		req.assert('email', 'E-mail cannot be blank').notEmpty();
 		req.assert('email', 'E-mail is not valid').isEmail();
 		req.assert('password', 'Password cannot be blank').notEmpty();

@@ -15,10 +15,10 @@ form#profileForm(name='profileForm', novalidate='novalidate', action='/profile',
 			p.help-block.text-danger
 	.control-group
 		.form-group.floating-label-form-group.controls.mb-0.pb-2
-			label(for='profile-geolocation') Email Address
-			input#profile-geolocation.form-control(type='text', name='geolocation', placeholder='Geo Location', data-validation-required-message='Please enter your geo location.', autocomplete='email', value=user.geolocation)
+			label(for='role') Role
+			input#role.form-control(type='text', name='text', placeholder='Role', data-validation-required-message='Please enter your role.', autocomplete='email', value=user.role)
 			p.help-block.text-danger
 	br
 	#success
 	.form-group
-		button#submitProfile.btn.btn-primary.btn-xl(type='submit') Update Profile
+		button#submitProfile.btn.btn-primary.btn-xl(type='submit' disabled=true) Update Profile

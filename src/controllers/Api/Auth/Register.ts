@@ -7,7 +7,7 @@
 import User from '../../../models/User';
 
 class Register {
-	public static perform (req, res): any {
+	static async perform (req, res): any {
 		req.assert('email', 'E-mail cannot be blank').notEmpty();
 		req.assert('email', 'E-mail is not valid').isEmail();
 		req.assert('password', 'Password cannot be blank').notEmpty();
@@ -31,28 +31,30 @@ class Register {
 			password: _password
 		});
 
-		User.findOne({ email: _email }, (err, existingUser) => {
-			if (err) {
-				return res.json({
-					error: err
-				});
-			}
-
-			if (existingUser) {
-				return res.json({
-					error: ['Account with the e-mail address already exists.']
-				});
-			}
-
-			user.save().then((user) => {
-				return res.json({
-					message: ['You have been successfully registered with us!']
-				});
-			}).catch((err) => {
-				return res.json({
-						error: err
-					});
+		let existingUser;
+		try {
+			existingUser = await User.findOne({ email: _email });
+		} catch (err) {
+			return res.json({
+				error: err
 			});
+		}
+		if (existingUser) {
+			return res.json({
+				error: ['Account with the e-mail address already exists.']
+			});
+		}
+
+		try {
+			await user.save();
+		} catch (err) {
+			return res.json({
+				error: err
+			});
+		}
+
+		return res.json({
+			message: ['You have been successfully registered with us!']
 		});
 	}
 }

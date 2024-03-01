@@ -7,14 +7,13 @@
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt-nodejs';
 
-import { IUser } from '../interfaces/models/user';
+import { IUser, Role } from '../interfaces/models/user';
 import mongoose from '../providers/Database';
 
 // Create the model schema & register your custom methods here
 export interface IUserModel extends IUser, mongoose.Document {
-	billingAddress(): string;
 	comparePassword(password: string, cb: any): string;
-	validPassword(password: string, cb: any): string;
+
 	gravatar(_size: number): string;
 }
 
@@ -24,21 +23,11 @@ export const UserSchema = new mongoose.Schema<IUserModel>({
 	password: { type: String },
 	passwordResetToken: { type: String },
 	passwordResetExpires: Date,
+	role: { type: String, enum: Role, default: Role.EMPLOYEE },
 
-	facebook: { type: String },
-	twitter: { type: String },
-	google: { type: String },
-	github: { type: String },
-	instagram: { type: String },
-	linkedin: { type: String },
-	steam: { type: String },
 	tokens: Array,
 
-	fullname: { type: String },
-	gender: { type: String },
-	geolocation: { type: String },
-	website: { type: String },
-	picture: { type: String }
+	fullname: { type: String }
 }, {
 	timestamps: true
 });
@@ -65,13 +54,6 @@ UserSchema.pre<IUserModel>('save', function (_next) {
 		});
 	});
 });
-
-// Custom Methods
-// Get user's full billing address
-UserSchema.methods.billingAddress = function (): string {
-	const fulladdress = `${this.fullname.trim()} ${this.geolocation.trim()}`;
-	return fulladdress;
-};
 
 // Compares the user's password with the request password
 UserSchema.methods.comparePassword = function (_requestPassword, _cb): any {
