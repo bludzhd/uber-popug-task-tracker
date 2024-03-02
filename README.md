@@ -55,8 +55,7 @@ A boilerplate for [Node.js](https://nodejs.org/en) App.
 │   │   ├── Auth
 │   │   │   ├── Login.ts
 │   │   │   ├── Logout.ts
-│   │   │   ├── Register.ts
-│   │   │   └── Social.ts
+│   │   │   └── Register.ts
 │   │   ├── Account.ts
 │   │   └── Home.ts
 │   ├── exception
@@ -128,25 +127,6 @@ cd nodets;
 ```
 
 ```bash
-# Without Docker
-
-# Note: It is assumed here that you have MongoDB running in the background and that you have created the database.
-
-# Install NPM dependencies.
-# Note: You can review the list of dependencies from the below link.
-# https://github.com/faizahmedfarooqui/nodets/network/dependencies
-npm install;
-
-# Edit your DotEnv file using any editor of your choice.
-# Please Note: You should add all the configurations details
-# or else default values will be used!
-vim .env;
-
-# Run the app
-npm run dev;
-```
-
-```bash
 # With Docker
 
 # Note: It is assumed here that you have Docker running in the background.
@@ -188,38 +168,3 @@ docker-compose up -d
   POST   | /api/auth/refresh-token
 +--------+-------------------------+
 ```
-
-# Screens
-
-### Home / Landing Page
-
-![Home / Landing Page](/screens/Home.png)
-> Note: This page has sub-sections, like about-us, contact-us & portfolio
-
-### LogIn Page
-
-![LogIn Page](/screens/Login.png)
-> Note: LogIn with Providers
-
-### SignUp Page
-
-![SignUp Page](/screens/SignUp.png)
-> Note: SignUp with Providers
-
-### Dashboard Page
-
-![Dashboard Page](/screens/Dashboard.png)
-
-### With Dropdown Menu
-
-![Dashboard Page with Dropdown Menu](/screens/DashboardWithDropdown.png)
-
-### Page Not Found Page
-
-![Page Not Found Page](/screens/PageNotFound.png)
-> Note: In case the requested URI does not exist, app shows this page
-
-### Under Maintenance Page
-
-![Under Maintenance Page](/screens/UnderMaintenance.png)
-> Note: In case an error is generated, so instead of plain errors we can show the under maintenance page.

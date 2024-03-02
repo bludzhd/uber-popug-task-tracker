@@ -44,6 +44,9 @@ class Locals {
 		const redisPrefix = process.env.REDIS_QUEUE_DB || 'q';
 		const redisDB = process.env.REDIS_QUEUE_PREFIX || 3;
 
+		const taskTrackerClientId = process.env.TASK_TRACKER_CLIENT_ID;
+		const taskTrackerClientSecret = process.env.TASK_TRACKER_CLIENT_SECRET;
+
 		return {
 			appSecret,
 			apiPrefix,
@@ -65,7 +68,9 @@ class Locals {
 			redisPrefix,
 			url,
 			queueMonitor,
-			queueMonitorHttpPort
+			queueMonitorHttpPort,
+			taskTrackerClientId,
+			taskTrackerClientSecret,
 		};
 	}
 
