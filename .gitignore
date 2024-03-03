@@ -6,12 +6,12 @@ packages/auth/node_modules/
 packages/auth/package-lock.json
 packages/auth/.cache/
 packages/auth/public/static
-packages/auth/.logs/*.log
+packages/auth/.logs/**/*.log
 packages/auth/dist/
 
 packages/task-tracker/node_modules/
 packages/task-tracker/package-lock.json
 packages/task-tracker/.cache/
 packages/task-tracker/public/static
-packages/task-tracker/.logs/*.log
+packages/task-tracker/.logs/**/*.log
 packages/task-tracker/dist/
