@@ -3,14 +3,14 @@ services:
     auth:
         build:
             context: ./packages/auth
-            dockerfile: local.Dockerfile
-        container_name: 'auth'
+            dockerfile: ./packages/auth/local.Dockerfile
+        container_name: 'popug-auth'
         volumes:
             - ./packages/auth:/usr/src/app/
         working_dir: /usr/src/app
         environment:
-            - REDIS_QUEUE_HOST=redis
-            - MONGOOSE_URL=mongodb://mongo:27017/typescript_mongoose
+            - REDIS_QUEUE_HOST=auth_redis
+            - MONGOOSE_URL=mongodb://auth_mongo:27017/typescript_mongoose
         command: sh -c "npm i && npm run dev"
         ports:
             - "4040:4040"
