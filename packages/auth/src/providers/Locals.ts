@@ -16,8 +16,6 @@ class Locals {
 	public static config(): any {
 		dotenv.config({ path: path.join(__dirname, '../../.env') });
 
-		// console.log('PROCESS.ENV', JSON.stringify(process.env, null, 2));
-
 		const url = process.env.APP_URL || `http://localhost:${process.env.PORT}`;
 		const port = process.env.PORT || 4040;
 		const appSecret = process.env.APP_SECRET || 'This is your responsibility!';
