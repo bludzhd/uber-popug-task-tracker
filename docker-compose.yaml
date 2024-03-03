@@ -1,29 +1,33 @@
 version: '3'
 services:
-    express-typescript:
+    network:
+        uber_popug:
+
+    auth:
         build:
-            context: .
+            context: ./packages/auth
             dockerfile: local.Dockerfile
-        container_name: 'app-express-typescript'
+        container_name: 'auth'
         volumes:
-            - .:/usr/src/app/
+            - ./packages/auth:/usr/src/app/
         working_dir: /usr/src/app
         environment:
             - REDIS_QUEUE_HOST=redis
             - MONGOOSE_URL=mongodb://mongo:27017/typescript_mongoose
         command: sh -c "npm i && npm run dev"
         ports:
-            - 4040:4040
-            - 5550:5550
-    redis:
+            - "4040:4040"
+            - "5550:5550"
+    auth_redis:
         image: "redis"
         ports:
         - "6379:6379"
         expose:
         - 6379
-    mongo:
+    auth_mongo:
         image: "mongo"
         ports:
         - "27017:27017"
         expose:
         - 27017
+# TODO task_tracker, task_tracker_redis, task_tracker_mongo

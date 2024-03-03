@@ -1,6 +1,6 @@
 h2.text-center.text-uppercase.text-secondary.mb-0 Profile
 hr.star-dark.mb-5
-include ../partials/flash
+include flash
 form#profileForm(name='profileForm', novalidate='novalidate', action='/profile', method='POST')
 	input(type='hidden', name='_csrf', value=_csrf)
 	.control-group

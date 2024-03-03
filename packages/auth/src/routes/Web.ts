@@ -6,8 +6,8 @@
 
 import { Router } from 'express';
 
-import Cache from './../providers/Cache';
-import Passport from './../providers/Passport';
+import Cache from '../providers/Cache';
+import Passport from '../providers/Passport';
 
 import HomeController from '../controllers/Home';
 import AccountController from '../controllers/Account';

@@ -8,8 +8,8 @@ import { Application } from 'express';
 import Locals from './Locals';
 import Log from '../middlewares/Log';
 
-import webRouter from './../routes/Web';
-import apiRouter from './../routes/Api';
+import webRouter from '../routes/Web';
+import apiRouter from '../routes/Api';
 
 class Routes {
 	public mountWeb(_express: Application): Application {
