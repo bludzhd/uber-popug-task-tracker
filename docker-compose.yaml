@@ -1,8 +1,5 @@
 version: '3'
 services:
-    network:
-        uber_popug:
-
     auth:
         build:
             context: ./packages/auth
