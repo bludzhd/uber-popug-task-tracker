@@ -46,6 +46,9 @@ class Locals {
 
 		const taskTrackerClientId = process.env.TASK_TRACKER_CLIENT_ID;
 		const taskTrackerClientSecret = process.env.TASK_TRACKER_CLIENT_SECRET;
+		const taskTrackerUrl = process.env.TASK_TRACKER_URL;
+
+		const zookeeperKafkaHost = process.env.KAFKA_ZOOKEEPER_CONNECT;
 
 		return {
 			appSecret,
@@ -71,6 +74,8 @@ class Locals {
 			queueMonitorHttpPort,
 			taskTrackerClientId,
 			taskTrackerClientSecret,
+			taskTrackerUrl,
+			zookeeperKafkaHost
 		};
 	}
 

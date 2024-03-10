@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 
 class Authorize {
-	static async perform (req, res): any {
+	static async perform (req, res): Promise<any> {
 		req.assert('clientId', 'Client ID cannot be blank').notEmpty();
 		req.assert('clientSecret', 'Client ID cannot be blank').notEmpty();
 

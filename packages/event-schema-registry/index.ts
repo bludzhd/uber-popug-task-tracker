@@ -1,0 +1,1 @@
+import avro from 'avsc';

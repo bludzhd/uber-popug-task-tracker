@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 
 class Verify {
-	static async perform (req, res): any {
+	static async perform (req, res): Promise<any> {
 		req.checkHeaders('authorization', 'Authorization header is required').notEmpty();
 
 		const errors = req.validationErrors();
@@ -15,7 +15,6 @@ class Verify {
 
 		try {
 			const decoded = await jwt.verify(token, res.locals.app.appSecret);
-			console.log('DECODED', JSON.stringify(decoded, null, 2));
 			res.json(decoded);
 		} catch (e) {
 			res.json({

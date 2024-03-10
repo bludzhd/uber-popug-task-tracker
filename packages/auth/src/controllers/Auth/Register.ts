@@ -1,5 +1,6 @@
 import User from '../../models/User';
 import { IRequest, IResponse, INext } from '../../interfaces/vendors';
+import { userType } from '../../schemas/user';
 
 class Register {
 	public static show (req: IRequest, res: IResponse): any {
@@ -47,12 +48,34 @@ class Register {
 			return next(error);
 		}
 
-		req.logIn(user, (err) => {
-			if (err) {
-				return next(err);
+		console.log('USER SAVED', JSON.stringify(user, null, 2));
+
+		const messageBuffer = userType.toBuffer({
+			id: user._id,
+			email: user.email,
+			role: user.role
+		});
+		const payload = [{
+			topic: 'user-topic',
+			messages: messageBuffer,
+			attributes: 1
+		}];
+
+		req.kafkaProducer.send(payload, (error, result) => {
+			if (error) {
+				console.error('Sending payload failed:', error);
+				res.status(500).json(error);
+			} else {
+				console.log('Sending payload result:', result);
 			}
-			req.flash('success', { msg: 'You are successfully logged in now!' });
-			res.redirect('/signup');
+
+			req.logIn(user, (err) => {
+				if (err) {
+					return next(err);
+				}
+				req.flash('success', { msg: 'You are successfully logged in now!' });
+				res.redirect('/signup');
+			});
 		});
 	}
 }

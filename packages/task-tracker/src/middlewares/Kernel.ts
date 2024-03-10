@@ -6,6 +6,7 @@
 
 import { Application } from 'express';
 
+import { Kafka } from './Kafka';
 import CORS from './CORS';
 import Http from './Http';
 import Views from './Views';
@@ -22,6 +23,9 @@ class Kernel {
 			// Mount CORS middleware
 			_express = CORS.mount(_express);
 		}
+
+		const kafka = new Kafka();
+		_express = kafka.mount(_express);
 
 		// Mount basic express apis middleware
 		_express = Http.mount(_express);
