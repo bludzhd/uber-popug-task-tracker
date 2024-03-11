@@ -11,7 +11,7 @@ services:
         environment:
             - REDIS_QUEUE_HOST=auth_redis
             - MONGOOSE_URL=mongodb://auth_mongo:27017/typescript_mongoose
-            - KAFKA_ZOOKEEPER_CONNECT=kafka:9092
+            - KAFKA_HOST=kafka:9092
         command: sh -c "npm i && npm run dev"
         ports:
             - "4040:4040"
@@ -42,7 +42,7 @@ services:
         environment:
             - REDIS_QUEUE_HOST=task_tracker_redis
             - MONGOOSE_URL=mongodb://task_tracker_mongo:27018/typescript_mongoose
-            - KAFKA_ZOOKEEPER_CONNECT=kafka:9092
+            - KAFKA_HOST=kafka:9092
         command: sh -c "npm i && npm run dev"
         ports:
             - "4041:4041"

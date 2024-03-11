@@ -7,7 +7,7 @@ export class Consumer {
 	public consumer: ConsumerGroup;
 
 	constructor() {
-		const host = Locals.config().zookeeperKafkaHost;
+		const host = Locals.config().kafkaHost;
 		this.client = new KafkaClient({
 			kafkaHost: host,
 			clientId: 'consumer-client',

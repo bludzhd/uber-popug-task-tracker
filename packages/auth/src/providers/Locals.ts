@@ -48,7 +48,7 @@ class Locals {
 		const taskTrackerClientSecret = process.env.TASK_TRACKER_CLIENT_SECRET;
 		const taskTrackerUrl = process.env.TASK_TRACKER_URL;
 
-		const zookeeperKafkaHost = process.env.KAFKA_ZOOKEEPER_CONNECT;
+		const kafkaHost = process.env.KAFKA_HOST;
 
 		return {
 			appSecret,
@@ -75,7 +75,7 @@ class Locals {
 			taskTrackerClientId,
 			taskTrackerClientSecret,
 			taskTrackerUrl,
-			zookeeperKafkaHost
+			kafkaHost
 		};
 	}
 

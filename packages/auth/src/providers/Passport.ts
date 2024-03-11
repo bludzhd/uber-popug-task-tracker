@@ -19,7 +19,6 @@ class Passport {
 		_express = _express.use(passport.session());
 
 		passport.serializeUser<any>((user: IUser, done) => {
-			console.log('PASSPORT USER ID', user.id);
 			done(null, user.id);
 		});
 
