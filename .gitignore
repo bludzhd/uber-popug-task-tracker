@@ -15,3 +15,6 @@ packages/task-tracker/.cache/
 packages/task-tracker/public/static
 packages/task-tracker/.logs/**/*.log
 packages/task-tracker/dist/
+
+# not ready yet
+packages/event-schema-registry/

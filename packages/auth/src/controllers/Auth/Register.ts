@@ -1,6 +1,6 @@
 import User from '../../models/User';
 import { IRequest, IResponse, INext } from '../../interfaces/vendors';
-import { userType } from '../../schemas/user';
+import { userRegisteredType } from '../../schemas/user.registered.v1';
 
 class Register {
 	public static show (req: IRequest, res: IResponse): any {
@@ -50,8 +50,8 @@ class Register {
 
 		console.log('USER SAVED', JSON.stringify(user, null, 2));
 
-		const messageBuffer = userType.toBuffer({
-			id: user._id,
+		const messageBuffer = userRegisteredType.toBuffer({
+			id: user._id.toString(),
 			email: user.email,
 			role: user.role
 		});
@@ -61,7 +61,8 @@ class Register {
 			attributes: 1
 		}];
 
-		req.kafkaProducer.send(payload, (error, result) => {
+		const producer = await req.getProducer();
+		producer.send(payload, (error, result) => {
 			if (error) {
 				console.error('Sending payload failed:', error);
 				res.status(500).json(error);

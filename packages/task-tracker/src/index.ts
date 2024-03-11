@@ -61,6 +61,11 @@ if (cluster.isMaster) {
 	App.loadDatabase();
 
 	/**
+	 * Connect consumer
+	 */
+	App.loadConsumer();
+
+	/**
 	 * Run the Server on Clusters
 	 */
 	App.loadServer();
