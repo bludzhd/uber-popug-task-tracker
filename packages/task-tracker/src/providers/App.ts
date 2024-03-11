@@ -10,6 +10,7 @@ import * as dotenv from 'dotenv';
 
 import Express from './Express';
 import { Database } from './Database';
+import Consumer from './consumer';
 
 import Queue from './Queue';
 import Locals from './Locals';
@@ -61,6 +62,10 @@ class App {
 
 			console.log('\x1b[33m%s\x1b[0m', `Queue Monitor :: Running @ 'http://localhost:${queueMonitorPort}'`);
 		}
+	}
+
+	public loadConsumer (): void {
+		Consumer.init();
 	}
 }
 

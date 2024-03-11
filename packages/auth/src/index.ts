@@ -61,6 +61,11 @@ if (cluster.isMaster) {
 	App.loadDatabase();
 
 	/**
+	 * Init producer connection
+	 */
+	App.loadProducerProvider();
+
+	/**
 	 * Run the Server on Clusters
 	 */
 	App.loadServer();

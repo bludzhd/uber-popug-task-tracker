@@ -8,14 +8,17 @@ import * as kue from 'kue';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 
-import Express from './Express';
+import { Express } from './Express';
 import { Database } from './Database';
+import { Producer as ProducerProvider } from './Producer';
 
 import Queue from './Queue';
 import Locals from './Locals';
 import Log from '../middlewares/Log';
 
 class App {
+	producerProvider: ProducerProvider;
+
 	// Clear the console
 	public clearConsole (): void {
 		process.stdout.write('\x1B[2J\x1B[0f');
@@ -36,7 +39,8 @@ class App {
 	public loadServer (): void {
 		Log.info('Server :: Booting @ Master...');
 
-		Express.init();
+		const express = new Express(this.producerProvider);
+		express.init();
 	}
 
 	// Loads the Database Pool
@@ -61,6 +65,11 @@ class App {
 
 			console.log('\x1b[33m%s\x1b[0m', `Queue Monitor :: Running @ 'http://localhost:${queueMonitorPort}'`);
 		}
+	}
+
+	public loadProducerProvider (): void {
+		this.producerProvider = new ProducerProvider();
+		this.producerProvider.init();
 	}
 }
 

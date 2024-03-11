@@ -11,10 +11,14 @@ services:
         environment:
             - REDIS_QUEUE_HOST=auth_redis
             - MONGOOSE_URL=mongodb://auth_mongo:27017/typescript_mongoose
+            - KAFKA_HOST=kafka:9092
         command: sh -c "npm i && npm run dev"
         ports:
             - "4040:4040"
             - "5550:5550"
+        depends_on:
+            - zookeeper
+            - kafka
     auth_redis:
         image: "redis"
         ports:
@@ -27,4 +31,58 @@ services:
         - "27017:27017"
         expose:
         - 27017
-# TODO task_tracker, task_tracker_redis, task_tracker_mongo
+    task_tracker:
+        build:
+            context: ./packages/task-tracker
+            dockerfile: ./local.Dockerfile
+        container_name: 'popug-task-tracker'
+        volumes:
+            - ./packages/task-tracker:/usr/src/app/
+        working_dir: /usr/src/app
+        environment:
+            - REDIS_QUEUE_HOST=task_tracker_redis
+            - MONGOOSE_URL=mongodb://task_tracker_mongo:27018/typescript_mongoose
+            - KAFKA_HOST=kafka:9092
+        command: sh -c "npm i && npm run dev"
+        ports:
+            - "4041:4041"
+            - "5551:5551"
+        depends_on:
+            - zookeeper
+            - kafka
+
+    task_tracker_redis:
+        image: "redis"
+        command: "--port 6380"
+        ports:
+            - "6380:6380"
+        expose:
+            - 6380
+    task_tracker_mongo:
+        image: "mongo"
+        command: "mongod --port 27018"
+        ports:
+            - "27018:27018"
+        expose:
+            - 27018
+    zookeeper:
+        image: confluentinc/cp-zookeeper:7.4.4
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+            ZOOKEEPER_TICK_TIME: 2000
+        ports:
+            - 22181:2181
+
+    kafka:
+        image: confluentinc/cp-kafka:7.4.4
+        depends_on:
+            - zookeeper
+        ports:
+            - 29092:29092
+        environment:
+            KAFKA_BROKER_ID: 1
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1

@@ -6,6 +6,7 @@
 
 import { Application } from 'express';
 
+import { Producer } from './Producer';
 import CORS from './CORS';
 import Http from './Http';
 import Views from './Views';
@@ -14,14 +15,18 @@ import CsrfToken from './CsrfToken';
 import StatusMonitor from './StatusMonitor';
 
 import Locals from '../providers/Locals';
+import { Producer as ProducerProvider } from '../providers/Producer';
 
 class Kernel {
-	public static init (_express: Application): Application {
+	public static init (_express: Application, producerProvider: ProducerProvider): Application {
 		// Check if CORS is enabled
 		if (Locals.config().isCORSEnabled) {
 			// Mount CORS middleware
 			_express = CORS.mount(_express);
 		}
+
+		const producer = new Producer(producerProvider);
+		_express = producer.mount(_express);
 
 		// Mount basic express apis middleware
 		_express = Http.mount(_express);

@@ -11,13 +11,14 @@ import LocalStrategy from '../services/strategies/Local';
 
 import User from '../models/User';
 import Log from '../middlewares/Log';
+import IUser from '../interfaces/models/user';
 
 class Passport {
 	public mountPackage (_express: Application): Application {
 		_express = _express.use(passport.initialize());
 		_express = _express.use(passport.session());
 
-		passport.serializeUser<any, any>((user, done) => {
+		passport.serializeUser<any>((user: IUser, done) => {
 			done(null, user.id);
 		});
 

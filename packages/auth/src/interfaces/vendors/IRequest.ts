@@ -5,11 +5,14 @@
  */
 
 import { Request } from 'express';
+import { HighLevelProducer } from 'kafka-node';
 
 export interface IRequest extends Request {
 	flash(message: string, callback: any): any;
 
 	logIn(user: any, callback: any): any;
 	user(): any;
-	logout(): void;
+	logout(callback: any): void;
+
+	getProducer(): Promise<HighLevelProducer>;
 }
