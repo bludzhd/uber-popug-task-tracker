@@ -1,7 +1,7 @@
 import Locals from '../providers/Locals';
 import { HighLevelProducer, KafkaClient } from 'kafka-node';
 
-export const name = 'auth-service';
+export const name = 'task-tracker-service';
 
 export class Producer {
 	public host: string;

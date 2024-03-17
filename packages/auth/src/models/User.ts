@@ -7,12 +7,11 @@ import mongoose from '../providers/Database';
 // Create the model schema & register your custom methods here
 export interface IUserModel extends IUser, mongoose.Document {
 	comparePassword(password: string, cb: any): string;
-
-	gravatar(_size: number): string;
 }
 
 // Define the User Schema
 export const UserSchema = new mongoose.Schema<IUserModel>({
+	publicId: { type: String, unique: true },
 	email: { type: String, unique: true },
 	password: { type: String },
 	passwordResetToken: { type: String },
@@ -54,21 +53,6 @@ UserSchema.methods.comparePassword = function (_requestPassword, _cb): any {
 	bcrypt.compare(_requestPassword, this.password, (_err, _isMatch) => {
 		return _cb(_err, _isMatch);
 	});
-};
-
-// User's gravatar
-UserSchema.methods.gravatar = function (_size): any {
-	if (! _size) {
-		_size = 200;
-	}
-
-	const url = 'https://gravatar.com/avatar';
-	if (! this.email) {
-		return `${url}/?s=${_size}&d=retro`;
-	}
-
-	const md5 = crypto.createHash('md5').update(this.email).digest('hex');
-	return `${url}/${md5}?s=${_size}&d=retro`;
 };
 
 const User = mongoose.model<IUserModel>('User', UserSchema);

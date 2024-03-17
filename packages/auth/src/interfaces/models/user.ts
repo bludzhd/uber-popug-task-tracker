@@ -17,6 +17,7 @@ export enum Role {
 }
 
 export interface IUser {
+	publicId: string;
 	email: string;
 	password: string;
 	passwordResetToken: string;
