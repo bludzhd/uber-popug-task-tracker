@@ -14,7 +14,7 @@ const taskCreatedSchema: Schema = {
 			type: {
 				type: 'enum',
 				name: 'eventVersion',
-				symbols: ['v1']
+				symbols: ['v2']
 			}
 		},
 		{

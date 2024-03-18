@@ -5,6 +5,7 @@ export enum Status {
 
 export interface ITask {
 	publicId: string;
+	customId: string;
 	title: string;
 	status: Status;
 	amount: number;

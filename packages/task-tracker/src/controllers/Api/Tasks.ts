@@ -7,6 +7,8 @@ import { assignmentCreatedCUDType } from '../../schemas/assignment.created.cud.v
 import { assignmentCreatedBEType } from '../../schemas/assignment.created.be.v1';
 import { taskCreatedCUDType } from '../../schemas/task.created.cud.v2';
 import { name as producerName } from '../../providers/Producer';
+import { Role } from '../../interfaces/models/user';
+import * as pick from 'lodash/pick';
 
 const TOPIC_ASSIGNMENT = 'assignment';
 const TOPIC_ASSIGNMENT_STREAMING = 'assignment-streaming';
@@ -53,11 +55,16 @@ class Tasks {
 	static async create(req, res): Promise<any> {
 		req.assert('customId', 'Custom ID cannot be blank').notEmpty();
 		req.assert('title', 'Title cannot be blank').notEmpty();
-		const { customId, title } = req.params;
-		const assignee = User.aggregate([
-			{ $match: { a: 10 } },
+		const { customId, title } = req.body;
+		const assignees = await User.aggregate([
+			{ $match: { role: Role.EMPLOYEE } },
 			{ $sample: { size: 1 } }
-		])[0];
+		]);
+		if (assignees.length === 0) {
+			res.status(412);
+		}
+		const assignee = assignees[0];
+		console.log('ASSIGNEE', assignee);
 		const task = new Task({
 			publicId: uuid(),
 			customId,
@@ -68,7 +75,7 @@ class Tasks {
 		const assignment = new Assignment({
 			publicId: uuid(),
 			taskId: task.publicId,
-			assigneeId: assignee.id
+			assigneeId: assignee.publicId
 		});
 
 		const session = await mongoose.startSession();
@@ -79,12 +86,21 @@ class Tasks {
 		await session.endSession();
 
 		const producer = await req.getProducer();
+		console.log('TASK', task);
+		console.log('ASSIGNMENT', assignment);
 		await produceEvent(
 			producer,
 			TOPIC_TASK_STREAMING,
 			EVENT_CUD_TASK_CREATED,
 			V2,
-			task,
+			pick(task, [
+				'publicId',
+				'title',
+				'customId',
+				'amount',
+				'fee',
+				'status'
+			]),
 			taskCreatedCUDType,
 			handleProduceResult(res)
 		);
@@ -93,7 +109,12 @@ class Tasks {
 			TOPIC_ASSIGNMENT_STREAMING,
 			EVENT_CUD_ASSIGMENT_CREATED,
 			V1,
-			assignment,
+			pick(assignment, [
+				'publicId',
+				'assigneeId',
+				'taskId',
+				'status'
+			]),
 			assignmentCreatedCUDType,
 			handleProduceResult(res)
 		);
@@ -102,13 +123,14 @@ class Tasks {
 			TOPIC_ASSIGNMENT,
 			EVENT_BE_ASSIGNMENT_CREATED,
 			V1,
-			{ publicId: assignment.publicId },
+			pick(assignment, ['publicId']),
 			assignmentCreatedBEType,
 			handleProduceResult(res)
 		);
 
-		return res.status(501).json({
-			status: 'not implemented'
+		return res.status(201).json({
+			taskId: task.publicId,
+			assignmentId: assignment.publicId
 		});
 	}
 }
