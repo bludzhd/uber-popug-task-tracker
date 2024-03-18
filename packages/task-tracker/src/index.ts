@@ -66,6 +66,11 @@ if (cluster.isMaster) {
 	App.loadConsumer();
 
 	/**
+	 * Init producer connection
+	 */
+	App.loadProducerProvider();
+
+	/**
 	 * Run the Server on Clusters
 	 */
 	App.loadServer();

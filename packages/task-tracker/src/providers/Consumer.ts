@@ -1,6 +1,7 @@
 import { ConsumerGroup, KafkaClient } from 'kafka-node';
 import Locals from '../providers/Locals';
 import { userRegisteredType } from '../schemas/user.registered.v1';
+import User from '../models/User';
 
 export class Consumer {
 	public client: KafkaClient;
@@ -18,7 +19,7 @@ export class Consumer {
 		this.consumer = new ConsumerGroup({
 			kafkaHost: host,
 			groupId: 'ExampleTestGroup'
-		}, ['user-topic']);
+		}, ['user-stream']);
 	}
 
 	public init() {
@@ -28,8 +29,25 @@ export class Consumer {
 			const messageBuffer = new Buffer(message.value as string, 'binary');
 			const decodedMessage = userRegisteredType.fromBuffer(messageBuffer.slice(0));
 			console.log('Consumer | Decoded Message:', typeof decodedMessage, decodedMessage);
+			const { eventName, data } = decodedMessage;
+			switch (eventName) {
+				case 'user-registered':
+					try {
+						const user = new User({
+							publicId: data.publicId,
+							email: data.email,
+							role: data.role
+						});
+						await user.save();
+					} catch (error) {
+						console.log('todo handle error', error);
+					}
+					break;
+				default:
+					// todo store event in error db
+			}
 		});
-		this.consumer.on('error', (error) => console.error('Kafka consumer error:', error));
+		this.consumer.on('error', (error) => console.error('Consumer | Error:', error));
 		this.consumer.on('connect', function () {
 			console.log('kafka consumer connect');
 		});

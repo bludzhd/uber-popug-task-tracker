@@ -10,18 +10,21 @@ import Locals from './Locals';
 import Routes from './Routes';
 import Bootstrap from '../middlewares/Kernel';
 import ExceptionHandler from '../exception/Handler';
+import { Producer as ProducerProvider } from './Producer';
 
-class Express {
+export class Express {
 	/**
 	 * Create the express object
 	 */
 	public express: express.Application;
+	public producerProvider: ProducerProvider;
 
 	/**
 	 * Initializes the express server
 	 */
-	constructor () {
+	constructor (producerProvider: ProducerProvider) {
 		this.express = express();
+		this.producerProvider = producerProvider;
 
 		this.mountDotEnv();
 		this.mountMiddlewares();
@@ -36,14 +39,13 @@ class Express {
 	 * Mounts all the defined middlewares
 	 */
 	private mountMiddlewares (): void {
-		this.express = Bootstrap.init(this.express);
+		this.express = Bootstrap.init(this.express, this.producerProvider);
 	}
 
 	/**
 	 * Mounts all the defined routes
 	 */
 	private mountRoutes (): void {
-		this.express = Routes.mountWeb(this.express);
 		this.express = Routes.mountApi(this.express);
 	}
 
@@ -67,6 +69,3 @@ class Express {
 		});
 	}
 }
-
-/** Export the express module */
-export default new Express();

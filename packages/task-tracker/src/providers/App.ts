@@ -8,15 +8,18 @@ import * as kue from 'kue';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 
-import Express from './Express';
+import { Express } from './Express';
 import { Database } from './Database';
 import Consumer from './consumer';
+import { Producer as ProducerProvider } from './Producer';
 
 import Queue from './Queue';
 import Locals from './Locals';
 import Log from '../middlewares/Log';
 
 class App {
+	producerProvider: ProducerProvider;
+
 	// Clear the console
 	public clearConsole (): void {
 		process.stdout.write('\x1B[2J\x1B[0f');
@@ -37,7 +40,8 @@ class App {
 	public loadServer (): void {
 		Log.info('Server :: Booting @ Master...');
 
-		Express.init();
+		const express = new Express(this.producerProvider);
+		express.init();
 	}
 
 	// Loads the Database Pool
@@ -66,6 +70,11 @@ class App {
 
 	public loadConsumer (): void {
 		Consumer.init();
+	}
+
+	public loadProducerProvider (): void {
+		this.producerProvider = new ProducerProvider();
+		this.producerProvider.init();
 	}
 }
 

@@ -34,7 +34,7 @@ services:
     task_tracker:
         build:
             context: ./packages/task-tracker
-            dockerfile: ./local.Dockerfile
+            dockerfile: ./packages/task-tracker/local.Dockerfile
         container_name: 'popug-task-tracker'
         volumes:
             - ./packages/task-tracker:/usr/src/app/

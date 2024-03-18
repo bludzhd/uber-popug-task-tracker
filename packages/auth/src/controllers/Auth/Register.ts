@@ -1,6 +1,34 @@
 import User from '../../models/User';
 import { IRequest, IResponse, INext } from '../../interfaces/vendors';
+import { v4 as uuid } from 'uuid';
 import { userRegisteredType } from '../../schemas/user.registered.v1';
+import { name as producerName } from '../../providers/Producer';
+
+// CUD event
+const USER_REGISTERED = 'user-registered';
+
+const eventMetadata = {
+	eventId: uuid(),
+	eventVersion: 'v1',
+	eventTime: (new Date()).toISOString(),
+	producer: producerName
+};
+
+const produceEvent = async (producer, data, callback) => {
+	const event = {
+		...eventMetadata,
+		eventName: USER_REGISTERED,
+		data
+	};
+	const messageBuffer = userRegisteredType.toBuffer(event);
+	const payload = [{
+		topic: 'user-stream',
+		messages: messageBuffer,
+		attributes: 1
+	}];
+
+	producer.send(payload, callback);
+};
 
 class Register {
 	public static show (req: IRequest, res: IResponse): any {
@@ -25,6 +53,7 @@ class Register {
 		}
 
 		const user = new User({
+			publicId: uuid(),
 			email: req.body.email,
 			password: req.body.password
 		});
@@ -49,20 +78,12 @@ class Register {
 		}
 
 		console.log('USER SAVED', JSON.stringify(user, null, 2));
-
-		const messageBuffer = userRegisteredType.toBuffer({
-			id: user._id.toString(),
+		const producer = await req.getProducer();
+		await produceEvent(producer, {
+			publicId: user.publicId,
 			email: user.email,
 			role: user.role
-		});
-		const payload = [{
-			topic: 'user-topic',
-			messages: messageBuffer,
-			attributes: 1
-		}];
-
-		const producer = await req.getProducer();
-		producer.send(payload, (error, result) => {
+		}, (error, result) => {
 			if (error) {
 				console.error('Sending payload failed:', error);
 				res.status(500).json(error);

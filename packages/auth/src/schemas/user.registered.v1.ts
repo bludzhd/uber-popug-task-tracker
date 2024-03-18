@@ -5,19 +5,50 @@ const userRegisteredSchema: Schema = {
 	name: 'User.Registered.v1',
 	fields: [
 		{
-			name: 'id',
+			name: 'eventId',
 			type: 'string'
 		},
 		{
-			name: 'email',
-			type: 'string'
-		},
-		{
-			name: 'role',
+			name: 'eventVersion',
 			type: {
 				type: 'enum',
-				name: 'Role',
-				symbols: ['ADMIN', 'MANAGER', 'EMPLOYEE']
+				symbols: ['v1'],
+				name: 'eventVersion'
+			}
+		},
+		{
+			name: 'eventTime',
+			type: 'string'
+		},
+		{
+			name: 'producer',
+			type: 'string',
+			description: 'todo why do we need producer name? todo const'
+		},
+		{
+			name: 'data',
+			type: {
+				name: 'user',
+				type: 'record',
+				fields: [
+					{
+						name: 'publicId',
+						type: 'string',
+						logicalType: 'uuid'
+					},
+					{
+						name: 'email',
+						type: 'string'
+					},
+					{
+						name: 'role',
+						type: {
+							type: 'enum',
+							name: 'role',
+							symbols: ['ADMIN', 'MANAGER', 'EMPLOYEE']
+						}
+					}
+				]
 			}
 		}
 	]

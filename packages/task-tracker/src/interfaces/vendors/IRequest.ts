@@ -5,7 +5,7 @@
  */
 
 import { Request } from 'express';
-import { ConsumerGroup } from 'kafka-node';
+import { HighLevelProducer } from 'kafka-node';
 
 export interface IRequest extends Request {
 	flash(message: string, callback: any): any;
@@ -14,5 +14,5 @@ export interface IRequest extends Request {
 	user(): any;
 	logout(): void;
 
-	kafkaConsumer: ConsumerGroup;
+	getProducer(): Promise<HighLevelProducer>;
 }

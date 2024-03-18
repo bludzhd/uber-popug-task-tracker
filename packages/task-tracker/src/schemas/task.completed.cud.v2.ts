@@ -1,8 +1,9 @@
 import { Type, Schema } from 'avsc';
 
-const userRegisteredSchema: Schema = {
+const taskCompletedSchema: Schema = {
 	type: 'record',
-	name: 'User.Registered.CUD.v1',
+	name: 'Task.Completed.CUD.v2',
+	description: 'Task model extended with custom id',
 	fields: [
 		{
 			name: 'eventId',
@@ -13,7 +14,7 @@ const userRegisteredSchema: Schema = {
 			type: {
 				type: 'enum',
 				name: 'eventVersion',
-				symbols: ['v1']
+				symbols: ['v2']
 			}
 		},
 		{
@@ -22,14 +23,13 @@ const userRegisteredSchema: Schema = {
 		},
 		{
 			name: 'producer',
-			type: 'string',
-			description: 'todo why do we need producer name? todo const'
+			type: 'string'
 		},
 		{
 			name: 'data',
 			type: {
 				type: 'record',
-				name: 'user',
+				name: 'task',
 				fields: [
 					{
 						name: 'publicId',
@@ -39,15 +39,27 @@ const userRegisteredSchema: Schema = {
 						}
 					},
 					{
-						name: 'email',
+						name: 'title',
 						type: 'string'
 					},
 					{
-						name: 'role',
+						name: 'customId',
+						type: 'string'
+					},
+					{
+						name: 'amount',
+						type: 'int'
+					},
+					{
+						name: 'fee',
+						type: 'int'
+					},
+					{
+						name: 'status',
 						type: {
 							type: 'enum',
-							name: 'userRole',
-							symbols: ['ADMIN', 'MANAGER', 'EMPLOYEE']
+							name: 'taskStatus',
+							symbols: ['OPEN']
 						}
 					}
 				]
@@ -56,4 +68,4 @@ const userRegisteredSchema: Schema = {
 	]
 };
 
-export const userRegisteredType = Type.forSchema(userRegisteredSchema);
+export const taskCompletedCUDType = Type.forSchema(taskCompletedSchema);
