@@ -1,4 +1,4 @@
-import { Promise } from 'bluebird';
+import * as Bluebird from 'bluebird';
 import { v4 as uuid } from 'uuid';
 import Assignment from '../../models/Assignment';
 import Task from '../../models/Task';
@@ -132,7 +132,7 @@ class Assignments {
 			const tasks = await Task.find({ status: TaskStatus.OPEN }).lean();
 			const users = await User.find({ role: Role.EMPLOYEE }).lean();
 			const userIds = users.map((user) => user.id);
-			const reassignments = await Promise.reduce(tasks, async (acc, task) => {
+			const reassignments = await Bluebird.reduce(tasks, async (acc, task) => {
 				const assigmentFailed = await Assignment.findOneAndUpdate(
 					{ taskId: task.publicId, status: AssignmentStatus.TODO },
 					{ status: AssignmentStatus.FAILED },
@@ -152,7 +152,7 @@ class Assignments {
 			await session.commitTransaction();
 			await session.endSession();
 			const producer = await req.getProducer();
-			await Promise.all([
+			await Bluebird.all([
 				// only streaming events for assignment failed: they don't trigger any business events
 				...reassignments.assignmentsFailed.map(async (assignment) => {
 					return produceEvent(

@@ -9,7 +9,7 @@ const USER_REGISTERED = 'user-registered';
 
 const eventMetadata = {
 	eventId: uuid(),
-	eventVersion: 1,
+	eventVersion: 'v1',
 	eventTime: (new Date()).toISOString(),
 	producer: producerName
 };

@@ -50,7 +50,9 @@ const handleProduceResult = (res) => (error, result) => {
 };
 
 class Tasks {
-	static async create(req, res): any {
+	static async create(req, res): Promise<any> {
+		req.assert('customId', 'Custom ID cannot be blank').notEmpty();
+		req.assert('title', 'Title cannot be blank').notEmpty();
 		const { customId, title } = req.params;
 		const assignee = User.aggregate([
 			{ $match: { a: 10 } },

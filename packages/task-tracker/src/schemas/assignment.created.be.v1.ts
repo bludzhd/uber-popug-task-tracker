@@ -12,9 +12,9 @@ const assignmentCreatedSchema: Schema = {
 			name: 'eventVersion',
 			type: {
 				type: 'enum',
-				name: 'EventVersion',
+				name: 'eventVersion',
 				symbols: ['v1']
-			}
+			},
 		},
 		{
 			name: 'eventTime',
@@ -26,13 +26,19 @@ const assignmentCreatedSchema: Schema = {
 		},
 		{
 			name: 'data',
-			type: 'record',
-			fields: [
-				{
-					name: 'publicId',
-					type: 'uuid'
-				}
-			]
+			type: {
+				type: 'record',
+				name: 'assignment',
+				fields: [
+					{
+						name: 'publicId',
+						type: {
+							type: 'string',
+							logicalType: 'uuid'
+						}
+					}
+				]
+			}
 		}
 	]
 };

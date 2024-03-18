@@ -12,7 +12,7 @@ const taskCreatedSchema: Schema = {
 			name: 'eventVersion',
 			type: {
 				type: 'enum',
-				name: 'EventVersion',
+				name: 'eventVersion',
 				symbols: ['v1']
 			}
 		},
@@ -38,17 +38,17 @@ const taskCreatedSchema: Schema = {
 				},
 				{
 					name: 'amount',
-					type: 'number'
+					type: 'int'
 				},
 				{
 					name: 'fee',
-					type: 'number'
+					type: 'int'
 				},
 				{
 					name: 'status',
 					type: {
 						type: 'enum',
-						name: 'Status',
+						name: 'taskStatus',
 						symbols: ['OPEN']
 					}
 				}

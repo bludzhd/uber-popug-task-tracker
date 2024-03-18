@@ -12,7 +12,7 @@ const taskCompletedSchema: Schema = {
 			name: 'eventVersion',
 			type: {
 				type: 'enum',
-				name: 'EventVersion',
+				name: 'eventVersion',
 				symbols: ['v1']
 			}
 		},
@@ -26,13 +26,19 @@ const taskCompletedSchema: Schema = {
 		},
 		{
 			name: 'data',
-			type: 'record',
-			fields: [
-				{
-					name: 'publicId',
-					type: 'uuid'
-				}
-			]
+			type: {
+				type: 'record',
+				name: 'task',
+				fields: [
+					{
+						name: 'publicId',
+						type: {
+							type: 'string',
+							logicalType: 'uuid'
+						}
+					}
+				]
+			}
 		}
 	]
 };

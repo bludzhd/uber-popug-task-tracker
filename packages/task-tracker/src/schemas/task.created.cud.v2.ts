@@ -13,8 +13,8 @@ const taskCreatedSchema: Schema = {
 			name: 'eventVersion',
 			type: {
 				type: 'enum',
-				name: 'EventVersion',
-				symbols: ['v2']
+				name: 'eventVersion',
+				symbols: ['v1']
 			}
 		},
 		{
@@ -27,37 +27,43 @@ const taskCreatedSchema: Schema = {
 		},
 		{
 			name: 'data',
-			type: 'record',
-			fields: [
-				{
-					name: 'publicId',
-					type: 'uuid'
-				},
-				{
-					name: 'title',
-					type: 'string'
-				},
-				{
-					name: 'customId',
-					type: 'string'
-				},
-				{
-					name: 'amount',
-					type: 'number'
-				},
-				{
-					name: 'fee',
-					type: 'number'
-				},
-				{
-					name: 'status',
-					type: {
-						type: 'enum',
-						name: 'Status',
-						symbols: ['OPEN']
+			type: {
+				type: 'record',
+				name: 'task',
+				fields: [
+					{
+						name: 'publicId',
+						type: {
+							type: 'string',
+							logicalType: 'uuid'
+						}
+					},
+					{
+						name: 'title',
+						type: 'string'
+					},
+					{
+						name: 'customId',
+						type: 'string'
+					},
+					{
+						name: 'amount',
+						type: 'int'
+					},
+					{
+						name: 'fee',
+						type: 'int'
+					},
+					{
+						name: 'status',
+						type: {
+							type: 'enum',
+							name: 'taskStatus',
+							symbols: ['OPEN']
+						}
 					}
-				}
-			]
+				]
+			}
 		}
 	]
 };

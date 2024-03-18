@@ -12,7 +12,7 @@ const assignmentCreatedSchema: Schema = {
 			name: 'eventVersion',
 			type: {
 				type: 'enum',
-				name: 'EventVersion',
+				name: 'eventVersion',
 				symbols: ['v1']
 			}
 		},
@@ -26,31 +26,41 @@ const assignmentCreatedSchema: Schema = {
 		},
 		{
 			name: 'data',
-			type: 'record',
-			fields: [
-				{
-					name: 'publicId',
-					type: 'uuid'
-				},
-				{
-					name: 'taskId',
-					type: 'uuid',
-					description: 'Task public id'
-				},
-				{
-					name: 'assigneeId',
-					type: 'uuid',
-					description: 'User public id'
-				},
-				{
-					name: 'status',
-					type: {
-						type: 'enum',
-						name: 'Status',
-						symbols: ['TODO']
+			type: {
+				type: 'record',
+				name: 'assignment',
+				fields: [
+					{
+						name: 'publicId',
+						type: {
+							type: 'string',
+							logicalType: 'uuid'
+						}
+					},
+					{
+						name: 'taskId',
+						type: {
+							type: 'string',
+							logicalType: 'uuid'
+						}
+					},
+					{
+						name: 'assigneeId',
+						type: {
+							type: 'string',
+							logicalType: 'uuid'
+						}
+					},
+					{
+						name: 'status',
+						type: {
+							type: 'enum',
+							name: 'status',
+							symbols: ['TODO']
+						}
 					}
-				}
-			]
+				]
+			}
 		}
 	]
 };

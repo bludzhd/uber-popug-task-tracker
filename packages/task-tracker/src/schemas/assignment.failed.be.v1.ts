@@ -12,8 +12,8 @@ const assignmentFailedSchema: Schema = {
 			name: 'eventVersion',
 			type: {
 				type: 'enum',
-				name: 'EventVersion',
-				symbols: ['v1']
+				symbols: ['v1'],
+				name: 'eventVersion'
 			}
 		},
 		{
@@ -26,13 +26,19 @@ const assignmentFailedSchema: Schema = {
 		},
 		{
 			name: 'data',
-			type: 'record',
-			fields: [
-				{
-					name: 'publicId',
-					type: 'uuid'
-				}
-			]
+			type: {
+				name: 'assignment',
+				type: 'record',
+				fields: [
+					{
+						name: 'publicId',
+						type: {
+							type: 'string',
+							logicalType: 'uuid'
+						}
+					}
+				]
+			}
 		}
 	]
 };

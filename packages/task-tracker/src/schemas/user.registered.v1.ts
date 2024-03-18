@@ -12,7 +12,7 @@ const userRegisteredSchema: Schema = {
 			name: 'eventVersion',
 			type: {
 				type: 'enum',
-				name: 'EventVersion',
+				name: 'eventVersion',
 				symbols: ['v1']
 			}
 		},
@@ -27,25 +27,31 @@ const userRegisteredSchema: Schema = {
 		},
 		{
 			name: 'data',
-			type: 'record',
-			fields: [
-				{
-					name: 'publicId',
-					type: 'uuid'
-				},
-				{
-					name: 'email',
-					type: 'string'
-				},
-				{
-					name: 'role',
-					type: {
-						type: 'enum',
-						name: 'Role',
-						symbols: ['ADMIN', 'MANAGER', 'EMPLOYEE']
+			type: {
+				type: 'record',
+				name: 'user',
+				fields: [
+					{
+						name: 'publicId',
+						type: {
+							type: 'string',
+							logicalType: 'uuid'
+						}
+					},
+					{
+						name: 'email',
+						type: 'string'
+					},
+					{
+						name: 'role',
+						type: {
+							type: 'enum',
+							name: 'userRole',
+							symbols: ['ADMIN', 'MANAGER', 'EMPLOYEE']
+						}
 					}
-				}
-			]
+				]
+			}
 		}
 	]
 };
