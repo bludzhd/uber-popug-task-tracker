@@ -14,7 +14,7 @@ const userRegisteredSchema: Schema = {
 		},
 		{
 			name: 'eventTime',
-			type: 'string'// iso date??
+			type: 'string'
 		},
 		{
 			name: 'producer',

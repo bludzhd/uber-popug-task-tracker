@@ -6,57 +6,45 @@ import User from '../../models/User';
 import { Status as AssignmentStatus } from '../../interfaces/models/assignment';
 import { Status as TaskStatus } from '../../interfaces/models/task';
 import { Role } from '../../interfaces/models/user';
-import { assignmentCompletedType } from '../../schemas/assignment.completed.v1';
+import { assignmentCompletedCUDType } from '../../schemas/assignment.completed.cud.v1';
+import { assignmentCompletedBEType } from '../../schemas/assignment.completed.be.v1';
+import { assignmentCreatedCUDType } from '../../schemas/assignment.created.cud.v1';
+import { assignmentCreatedBEType } from '../../schemas/assignment.created.be.v1';
+import { assignmentFailedBEType } from '../../schemas/assignment.failed.be.v1';
+import { taskCompletedCUDType } from '../../schemas/task.completed.cud.v2';
 import { name as producerName } from '../../providers/Producer';
 import mongoose from '../../providers/Database';
 
-const ASSIGNMENT_COMPLETED = 'assignment-completed';
+const TOPIC_ASSIGNMENT = 'assignment';
+const TOPIC_ASSIGNMENT_STREAMING = 'assignment-streaming';
+const TOPIC_TASK_STREAMING = 'task-streaming';
+
+const EVENT_CUD_TASK_COMPLETED = 'task-completed';
+const EVENT_CUD_ASSIGNMENT_COMPLETED = 'assignment-completed';
+const EVENT_CUD_ASSIGMENT_CREATED = 'assignment-created';
+
+const EVENT_BE_ASSIGNMENT_CREATED = 'assignment-created';
+const EVENT_BE_ASSIGNMENT_FAILED = 'assignment-failed';
+const EVENT_BE_ASSIGNMENT_COMPLETED = 'assignment-created';
+
+const V1 = 'v1';
+const V2 = 'v2';
 
 const eventMetadata = {
 	eventId: uuid(),
-	eventVersion: 1,
 	eventTime: (new Date()).toISOString(),
 	producer: producerName
 };
-const produceAssignmentBeEvent = async (producer, data, callback) => {
+const produceEvent = async (producer, topic, eventName, eventVersion, data, type, callback) => {
 	const event = {
 		...eventMetadata,
-		eventName: ASSIGNMENT_COMPLETED,
+		eventVersion,
+		eventName,
 		data
 	};
-	const messageBuffer = assignmentCompletedType.toBuffer(event);
+	const messageBuffer = type.toBuffer(event);
 	const payload = [{
-		topic: 'assignment',
-		messages: messageBuffer,
-		attributes: 1
-	}];
-
-	producer.send(payload, callback);
-};
-const produceAssignmentStreamingEvent = async (producer, data, callback) => {
-	const event = {
-		...eventMetadata,
-		eventName: ASSIGNMENT_COMPLETED,
-		data
-	};
-	const messageBuffer = assignmentCompletedType.toBuffer(event);
-	const payload = [{
-		topic: 'assignment-stream',
-		messages: messageBuffer,
-		attributes: 1
-	}];
-
-	producer.send(payload, callback);
-};
-const produceTaskStreamingEvent = async (producer, data, callback) => {
-	const event = {
-		...eventMetadata,
-		eventName: ASSIGNMENT_COMPLETED,
-		data
-	};
-	const messageBuffer = assignmentCompletedType.toBuffer(event);
-	const payload = [{
-		topic: 'task-stream',
+		topic,
 		messages: messageBuffer,
 		attributes: 1
 	}];
@@ -73,15 +61,15 @@ const handleProduceResult = (res) => (error, result) => {
 };
 
 class Assignments {
-	static async list(req, res, next): Promise<any> {
+	static async list(req, res): Promise<any> {
 		const assignments = await Assignment.find({
-			userId: req.user.id,
+			assigneeId: req.user.id,
 			status: AssignmentStatus.TODO
 		});
 		return res.json(assignments);
 	}
 
-	static async complete(req, res, next): Promise<any> {
+	static async complete(req, res): Promise<any> {
 		const { assignmentId: publicId } = req.params;
 		let assignment;
 		let task;
@@ -106,12 +94,34 @@ class Assignments {
 
 		const producer = await req.getProducer();
 
-		// for consumer to save the data about the assignment
-		await produceAssignmentStreamingEvent(producer, assignment, handleProduceResult(res));
-		// for consumer to save the data about the task
-		await produceTaskStreamingEvent(producer, task, handleProduceResult(res));
-		// for consumer to trigger some action
-		await produceAssignmentBeEvent(producer, { publicId }, handleProduceResult(res));
+		await produceEvent(
+			producer,
+			TOPIC_ASSIGNMENT_STREAMING,
+			EVENT_CUD_ASSIGNMENT_COMPLETED,
+			V1,
+			assignment,
+			assignmentCompletedCUDType,
+			handleProduceResult(res)
+		);
+		await produceEvent(
+			producer,
+			TOPIC_TASK_STREAMING,
+			EVENT_CUD_TASK_COMPLETED,
+			V2,
+			task,
+			taskCompletedCUDType,
+			handleProduceResult(res)
+		);
+		await produceEvent(
+			producer,
+			TOPIC_ASSIGNMENT,
+			EVENT_BE_ASSIGNMENT_COMPLETED,
+			V1,
+			{ publicId },
+			assignmentCompletedBEType,
+			handleProduceResult(res)
+		);
+
 		return res.json(assignment);
 	}
 
@@ -119,8 +129,8 @@ class Assignments {
 		try {
 			const session = await mongoose.startSession();
 			await session.startTransaction();
-			const tasks = await Task.find({ status: TaskStatus.OPEN });
-			const users = await User.find({ role: Role.EMPLOYEE });
+			const tasks = await Task.find({ status: TaskStatus.OPEN }).lean();
+			const users = await User.find({ role: Role.EMPLOYEE }).lean();
 			const userIds = users.map((user) => user.id);
 			const reassignments = await Promise.reduce(tasks, async (acc, task) => {
 				const assigmentFailed = await Assignment.findOneAndUpdate(
@@ -133,19 +143,55 @@ class Assignments {
 				const newAssignment = new Assignment({
 					publicId: uuid(),
 					taskId: task.id,
-					userId: userIds[userIdIdx]
+					assigneeId: userIds[userIdIdx]
 				});
 				await newAssignment.save();
 				acc.assignmentsCreated = [...acc.assignmentsCreated, newAssignment];
+				return acc;
 			}, Object.create({ assignmentsFailed: [], assignmentsCreated: [] }));
 			await session.commitTransaction();
 			await session.endSession();
+			const producer = await req.getProducer();
+			await Promise.all([
+				// only streaming events for assignment failed: they don't trigger any business events
+				...reassignments.assignmentsFailed.map(async (assignment) => {
+					return produceEvent(
+						producer,
+						TOPIC_ASSIGNMENT_STREAMING,
+						EVENT_BE_ASSIGNMENT_FAILED,
+						V1,
+						assignment,
+						assignmentFailedBEType,
+						handleProduceResult(res)
+					);
+				}),
+				...reassignments.assignmentsCreated.map(async (assignment) => {
+					return produceEvent(
+						producer,
+						TOPIC_ASSIGNMENT_STREAMING,
+						EVENT_CUD_ASSIGMENT_CREATED,
+						V1,
+						assignment,
+						assignmentCreatedCUDType,
+						handleProduceResult(res)
+					);
+				}),
+				// business events for assignment created as they should trigger billing transaction creation
+				...reassignments.assignmentsCreated.map(async ({ publicId }) => {
+					return produceEvent(
+						producer,
+						TOPIC_ASSIGNMENT,
+						EVENT_BE_ASSIGNMENT_CREATED,
+						V1,
+						{ publicId },
+						assignmentCreatedBEType,
+						handleProduceResult(res)
+					);
+				})
+			]);
 		} catch (error) {
 			res.status(500).json(error);
 		}
-
-		const producer = await req.getProducer();
-		// reassignments: produce cud event and business event for each assignemtn failed and assignment created
 	}
 }
 

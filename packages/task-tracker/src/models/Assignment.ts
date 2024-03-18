@@ -7,7 +7,7 @@ export const AssignmentSchema = new mongoose.Schema<IAssignmentModel>({
 	publicId: { type: String, unique: true },
 	status: { type: String, enum: Status, default: Status.TODO },
 	taskId:  { type: String },
-	userId: { type: String }
+	assigneeId: { type: String }
 }, {
 	timestamps: true
 });

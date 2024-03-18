@@ -1,8 +1,8 @@
 import { Type, Schema } from 'avsc';
 
-const userRegisteredSchema: Schema = {
+const assignmentCreatedSchema: Schema = {
 	type: 'record',
-	name: 'User.Registered.CUD.v1',
+	name: 'Assignment.Created.CUD.v1',
 	fields: [
 		{
 			name: 'eventId',
@@ -22,8 +22,7 @@ const userRegisteredSchema: Schema = {
 		},
 		{
 			name: 'producer',
-			type: 'string',
-			description: 'todo why do we need producer name? todo const'
+			type: 'string'
 		},
 		{
 			name: 'data',
@@ -34,15 +33,21 @@ const userRegisteredSchema: Schema = {
 					type: 'uuid'
 				},
 				{
-					name: 'email',
-					type: 'string'
+					name: 'taskId',
+					type: 'uuid',
+					description: 'Task public id'
 				},
 				{
-					name: 'role',
+					name: 'assigneeId',
+					type: 'uuid',
+					description: 'User public id'
+				},
+				{
+					name: 'status',
 					type: {
 						type: 'enum',
-						name: 'Role',
-						symbols: ['ADMIN', 'MANAGER', 'EMPLOYEE']
+						name: 'Status',
+						symbols: ['TODO']
 					}
 				}
 			]
@@ -50,4 +55,4 @@ const userRegisteredSchema: Schema = {
 	]
 };
 
-export const userRegisteredType = Type.forSchema(userRegisteredSchema);
+export const assignmentCreatedCUDType = Type.forSchema(assignmentCreatedSchema);

@@ -7,7 +7,7 @@ export enum Status {
 export interface IAssignment {
 	publicId: string;
 	taskId: string;
-	userId: string;
+	assigneeId: string;
 	status: Status;
 }
 

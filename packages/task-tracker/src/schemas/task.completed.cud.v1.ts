@@ -1,8 +1,8 @@
 import { Type, Schema } from 'avsc';
 
-const assignmentCompletedSchema: Schema = {
+const taskCompletedSchema: Schema = {
 	type: 'record',
-	name: 'Assignment.Completed.v1',
+	name: 'Task.Completed.CUD.v1',
 	fields: [
 		{
 			name: 'eventId',
@@ -10,11 +10,15 @@ const assignmentCompletedSchema: Schema = {
 		},
 		{
 			name: 'eventVersion',
-			type: 'number'
+			type: {
+				type: 'enum',
+				name: 'EventVersion',
+				symbols: ['v1']
+			}
 		},
 		{
 			name: 'eventTime',
-			type: 'string'// iso date??
+			type: 'string'
 		},
 		{
 			name: 'producer',
@@ -33,4 +37,4 @@ const assignmentCompletedSchema: Schema = {
 	]
 };
 
-export const assignmentCompletedType = Type.forSchema(assignmentCompletedSchema);
+export const taskCompletedCUDType = Type.forSchema(taskCompletedSchema);
